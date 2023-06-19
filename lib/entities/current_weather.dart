@@ -8,7 +8,8 @@ class CurrentWeather {
   final double wSpeed;
   final int icon;
   final String condition;
+  final double precipMm;
 
   CurrentWeather(this.tmp, this.feels, this.tmpMin, this.tmpMax, this.humidity,
-      this.pressure, this.wSpeed, this.icon, this.condition);
+      this.pressure, this.wSpeed, this.icon, this.condition, this.precipMm);
 }

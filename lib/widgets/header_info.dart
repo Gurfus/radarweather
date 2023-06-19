@@ -22,20 +22,21 @@ class _HeaderInfoState extends State<HeaderInfo> {
     getLocaton(weatherProvider.getLat(), weatherProvider.getLong());
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
             margin: const EdgeInsets.only(left: 20, right: 20),
             alignment: Alignment.topLeft,
             child: Text(
               city,
-              style: const TextStyle(fontSize: 35),
+              style: const TextStyle(fontSize: 35, color: Colors.white),
             )),
         Container(
             margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
             alignment: Alignment.topLeft,
             child: Text(
               date,
-              style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+              style: TextStyle(fontSize: 15, color: Colors.grey[100]),
             )),
       ],
     );

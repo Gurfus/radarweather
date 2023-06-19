@@ -1,3 +1,6 @@
+import 'package:radarweather/model/weatherV2/weather_api/hour.dart';
+import 'package:radarweather/model/weatherV2/weather_api/weather_hourly.dart';
+
 import '../../../entities/current_weather.dart';
 import 'current.dart';
 import 'forecast.dart';
@@ -37,5 +40,15 @@ class WeatherApi {
       current!.pressureMb as double,
       current!.windKph as double,
       current!.condition!.code as int,
-      current!.condition!.text as String);
+      current!.condition!.text as String,
+      forecast!.forecastday![0].day!.totalprecipMm as double);
+
+  Iterable<Iterable<Hourly>>? getHourToEntity() =>
+      forecast!.forecastday!.map((e) => e.hour!.map((e) => Hourly(
+          timeEpoch: e.timeEpoch,
+          tempC: e.tempC,
+          tempF: e.tempF,
+          condition: e.condition,
+          precipIn: e.precipIn,
+          precipMm: e.precipMm)));
 }

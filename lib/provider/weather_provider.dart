@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:radarweather/data/get_current_weather.dart';
 import 'package:radarweather/entities/current_weather.dart';
+import 'package:radarweather/model/weather/weather_current/weather_current.dart';
+
+import '../model/weatherV2/weather_api/weather_data.dart';
 
 class WeatherProvider extends ChangeNotifier {
   bool _isLoading = true;
@@ -11,10 +14,15 @@ class WeatherProvider extends ChangeNotifier {
   bool getIsloading() => _isLoading;
   double getLat() => lat;
   double getLong() => long;
-  CurrentWeather? currentWeather;
+  WeatherData? weatherData;
+  WeatherCurrent? weatherCurrent;
 
   getCurrentDataWeather() {
-    return currentWeather;
+    return weatherData!.getCurrentWeatherEntity();
+  }
+
+  getHourlyDataWeather() {
+    return weatherData!.getHourlyWeatherEntity();
   }
 
   getLocation() async {
@@ -42,7 +50,7 @@ class WeatherProvider extends ChangeNotifier {
       long = value.longitude;
 
       return GetCurrentWeather().getData(lat, long).then((value) {
-        currentWeather = value;
+        weatherData = value;
         _isLoading = false;
         notifyListeners();
       });

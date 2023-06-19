@@ -12,10 +12,38 @@ class CurrentWeatherInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Lottie.asset('assets/1003.json', width: 64, height: 64),
-        Text('${currentWeather.tmp}'),
+        // Lottie.asset('assets/1003.json', width: 64, height: 64)
+
+        const SizedBox(height: 10),
+        Text('${currentWeather.tmp.toInt()}º',
+            style: const TextStyle(fontSize: 80, color: Colors.white)),
+
+        Text(
+          currentWeather.condition,
+          style: const TextStyle(color: Colors.white, fontSize: 20),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Max: ${currentWeather.tmpMax.toInt()}º',
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            Text(
+              'Min: ${currentWeather.tmpMin.toInt()}º',
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+            )
+          ],
+        )
       ],
     );
   }
