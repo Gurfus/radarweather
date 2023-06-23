@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:radarweather/data/get_current_weather.dart';
+import 'package:radarweather/data/get_poblaciones.dart';
 import 'package:radarweather/entities/current_weather.dart';
+import 'package:radarweather/model/aemet_id_poblaciones/aemet_id_data.dart';
 import 'package:radarweather/model/weather/weather_current/weather_current.dart';
 
 import '../model/weatherV2/weather_api/weather_data.dart';
@@ -16,6 +18,7 @@ class WeatherProvider extends ChangeNotifier {
   double getLong() => long;
   WeatherData? weatherData;
   WeatherCurrent? weatherCurrent;
+  AemetIdData? aemetIdData;
 
   getCurrentDataWeather() {
     return weatherData!.getCurrentWeatherEntity();
@@ -23,6 +26,14 @@ class WeatherProvider extends ChangeNotifier {
 
   getHourlyDataWeather() {
     return weatherData!.getHourlyWeatherEntity();
+  }
+
+  getForecastDays() {
+    return weatherData!.getForecastDays();
+  }
+
+  getPoblaciones() {
+    return aemetIdData!.getIdData();
   }
 
   getLocation() async {
@@ -54,6 +65,13 @@ class WeatherProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       });
+    });
+  }
+
+  getDataPoblaciones() async {
+    return await GetPoblaciones().getIdPoblaciones().then((value) {
+      aemetIdData = value;
+      notifyListeners();
     });
   }
 }

@@ -15,12 +15,11 @@ class CurrentWeatherInfo extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        // Lottie.asset('assets/1003.json', width: 64, height: 64)
-
+        Lottie.asset('assets/1/${currentWeather.icon}.json',
+            width: 128, height: 128),
         const SizedBox(height: 10),
         Text('${currentWeather.tmp.toInt()}º',
             style: const TextStyle(fontSize: 80, color: Colors.white)),
-
         Text(
           currentWeather.condition,
           style: const TextStyle(color: Colors.white, fontSize: 20),

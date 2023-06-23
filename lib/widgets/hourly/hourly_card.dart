@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:radarweather/widgets/hourly_list.dart';
 
-import '../entities/current_weather.dart';
-import '../model/weatherV2/weather_api/weather_hourly.dart';
+import '../../model/weatherV2/weather_api/weather_hourly.dart';
 
-class ForecastCard extends StatelessWidget {
+import 'hourly_list.dart';
+
+class HourlyCard extends StatelessWidget {
   final Iterable<Iterable<Hourly>>? hourEntities;
-  const ForecastCard({super.key, this.hourEntities});
+  const HourlyCard({super.key, this.hourEntities});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.hardEdge,
       elevation: 6,
-      color: Colors.black54,
+      color: Colors.black38,
       margin: const EdgeInsets.symmetric(horizontal: 25),
       child: Column(
         children: [

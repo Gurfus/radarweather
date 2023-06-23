@@ -1,4 +1,7 @@
-import 'package:radarweather/model/weatherV2/weather_api/hour.dart';
+import 'package:radarweather/model/weatherV2/weather_api/day.dart';
+import 'package:radarweather/model/weatherV2/weather_api/forecastday.dart';
+
+import 'package:radarweather/model/weatherV2/weather_api/weather_forecast_days.dart';
 import 'package:radarweather/model/weatherV2/weather_api/weather_hourly.dart';
 
 import '../../../entities/current_weather.dart';
@@ -32,6 +35,7 @@ class WeatherApi {
       };
 
   CurrentWeather toCurrentWeatherEntity() => CurrentWeather(
+      current!.lastUpdated as String,
       current!.tempC as double,
       current!.feelslikeC as double,
       forecast!.forecastday![0].day!.mintempC as double,
@@ -51,4 +55,13 @@ class WeatherApi {
           condition: e.condition,
           precipIn: e.precipIn,
           precipMm: e.precipMm)));
+
+  Iterable<ForecastDays>? toForecastNextDaysEntity() =>
+      forecast!.forecastday!.map((e) => ForecastDays(
+          dateEpoch: e.dateEpoch,
+          maxtempC: e.day!.maxtempC,
+          mintempC: e.day!.mintempC,
+          totalprecipMm: e.day!.totalprecipMm,
+          condition: e.day!.condition,
+          maxwindKph: e.day!.maxwindKph));
 }

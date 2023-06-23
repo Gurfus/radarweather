@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
-import '../model/weatherV2/weather_api/weather_hourly.dart';
+import '../../model/weatherV2/weather_api/weather_hourly.dart';
 
 class HourlyList extends StatefulWidget {
   final Iterable<Iterable<Hourly>> hourEntities;
@@ -50,10 +51,10 @@ class _HourlyListState extends State<HourlyList> {
               margin: const EdgeInsets.only(left: 20, right: 5),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.black12,
-                  border: showBorder != index
+                  color: Colors.transparent,
+                  border: showBorder == index
                       ? Border.all(color: Colors.blue)
-                      : Border.all(color: Colors.red)),
+                      : Border.all(color: Colors.transparent)),
               child: HourlyDetails(
                 index: index,
                 temp: hourly.tempC as double,
@@ -101,22 +102,19 @@ class HourlyDetails extends StatelessWidget {
           margin: const EdgeInsets.only(top: 10),
           child: Text(
             getTime(timeStamp),
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
         ),
         Container(
           margin: const EdgeInsets.all(5),
-          // child: Image.asset(
-          //   "assets/weather/$weatherIcon.png",
-          //   height: 40,
-          //   width: 40,
-          // ),
+          child: Lottie.asset('assets/1/${weatherIcon}.json',
+              width: 52, height: 52),
         ),
         Container(
           margin: const EdgeInsets.only(bottom: 10),
           child: Text(
             "$temp°",
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
         )
       ],
