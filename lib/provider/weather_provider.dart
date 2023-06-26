@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:radarweather/data/get_current_weather.dart';
-import 'package:radarweather/data/get_poblaciones.dart';
+import 'package:radarweather/data/apiWeather/get_current_weather.dart';
+import 'package:radarweather/data/aemet/get_current_weather_aemet.dart';
+import 'package:radarweather/data/aemet/get_daily_weather_aemet.dart';
 import 'package:radarweather/entities/current_weather.dart';
-import 'package:radarweather/model/aemet_id_poblaciones/aemet_id_data.dart';
 import 'package:radarweather/model/weather/weather_current/weather_current.dart';
+import 'package:radarweather/provider/db_provider.dart';
 
 import '../model/weatherV2/weather_api/weather_data.dart';
 
@@ -18,22 +19,19 @@ class WeatherProvider extends ChangeNotifier {
   double getLong() => long;
   WeatherData? weatherData;
   WeatherCurrent? weatherCurrent;
-  AemetIdData? aemetIdData;
+
+  DbProvider? dbProvider;
 
   getCurrentDataWeather() {
-    return weatherData!.getCurrentWeatherEntity();
+    return weatherData?.getCurrentWeatherEntity();
   }
 
   getHourlyDataWeather() {
-    return weatherData!.getHourlyWeatherEntity();
+    return weatherData?.getHourlyWeatherEntity();
   }
 
   getForecastDays() {
-    return weatherData!.getForecastDays();
-  }
-
-  getPoblaciones() {
-    return aemetIdData!.getIdData();
+    return weatherData?.getForecastDays();
   }
 
   getLocation() async {
@@ -54,24 +52,25 @@ class WeatherProvider extends ChangeNotifier {
         return Future.error('Permitions are denied');
       }
     }
-    return await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high)
+    return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((value) async {
       lat = value.latitude;
       long = value.longitude;
 
+      await GetCurrentWeatherAemet().getCurrentAemet(lat, long);
+
+      //getIdema(lat, long);
       return GetCurrentWeather().getData(lat, long).then((value) {
         weatherData = value;
+
         _isLoading = false;
         notifyListeners();
       });
     });
   }
 
-  getDataPoblaciones() async {
-    return await GetPoblaciones().getIdPoblaciones().then((value) {
-      aemetIdData = value;
-      notifyListeners();
-    });
+  getIdema(lat, long) async {
+    final estacion = DbProvider.db.buscarEstacionCercana(lat, long);
+    return estacion;
   }
 }

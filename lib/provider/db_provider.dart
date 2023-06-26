@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:radarweather/model/aemet_id_poblaciones/aemet_id_poblaciones.dart';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
+
+import '../helpers/estacionesIdema/calculate_near_station.dart';
 
 class DbProvider {
   static Database? _database;
@@ -14,25 +16,25 @@ class DbProvider {
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    _database = await initDB('Barcelona');
+    _database = await initDB();
 
     return _database!;
   }
 
-  Future<Database> initDB(String ciudad) async {
+  Future<Database> initDB() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentDirectory.path, 'idPoblaciones.db');
-    print(path);
+    //print(path);
 
     return await openDatabase(
       path,
       version: 1,
-      onOpen: (db) {
-        // Llamada para buscar una ciudad después de abrir la base de datos
-        buscarCiudad(db, '$ciudad').then((resultado) {
-          // Procesar el resultado aquí
-        });
-      },
+      // onOpen: (db) {
+      //   // Llamada para buscar una ciudad después de abrir la base de datos
+      //   buscarCiudad(db, ciudad).then((resultado) {
+      //     // Procesar el resultado aquí
+      //   });
+      // },
     );
   }
 
@@ -42,16 +44,54 @@ class DbProvider {
       'SELECT id FROM municipiosTable WHERE nombre = ?',
       [nombre],
     );
-    print(resultado.first.values.first);
 
     return resultado;
   }
 
-  newPoblacionRaw(AemetIdPoblaciones newPobblacion) async {
-    final db = await database;
+// Función para buscar la estación más cercana a una ubicación dada
+  Future<Map<String, dynamic>> buscarEstacionCercana(
+      double latitud, double longitud) async {
+    // Abrir la base de datos
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    final path = join(documentDirectory.path, 'estacionesIDEMA.db');
+    Database db = await openDatabase(path);
 
-    final res = await db.insert('idPoblaciones', newPobblacion.toJson());
+    // Consulta SQL para obtener todas las estaciones de la base de datos
+    String query = 'SELECT idema,lon,lat FROM estacionesIDEMA';
+    List<Map<String, dynamic>> estaciones = await db.rawQuery(query);
 
-    return res;
+    // Variables para almacenar la estación más cercana
+    double distanciaMinima = double.infinity;
+    Map<String, dynamic>? estacionCercana;
+
+    // Calcular la distancia entre la ubicación dada y cada estación
+    for (Map<String, dynamic> estacion in estaciones) {
+      double estacionLatitud = estacion['lat'];
+      double estacionLongitud = estacion['lon'];
+
+      // Calcular la distancia utilizando la fórmula de la distancia haversine
+      double distancia = calculateDistance(
+          latitud, longitud, estacionLatitud, estacionLongitud);
+
+      // Actualizar la estación más cercana si la distancia es menor a la distancia mínima actual
+      if (distancia < distanciaMinima) {
+        distanciaMinima = distancia;
+        estacionCercana = estacion;
+      }
+    }
+
+    // Cerrar la base de datoss
+    await db.close();
+
+    // Devolver la estación más cercana encontrada
+    //print(estacionCercana?.values.first);
+    return estacionCercana ?? {};
+  }
+
+  Future<void> closeDB() async {
+    if (_database != null) {
+      await _database!.close();
+      _database = null;
+    }
   }
 }

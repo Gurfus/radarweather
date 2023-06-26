@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:radarweather/entities/current_weather.dart';
-import 'package:radarweather/model/aemet_id_poblaciones/aemet_id_data.dart';
-import 'package:radarweather/model/aemet_id_poblaciones/aemet_id_poblaciones.dart';
+
 import 'package:radarweather/model/weather/weather_current/weather_current.dart';
 import 'package:radarweather/model/weatherV2/weather_api/weather_hourly.dart';
-import 'package:radarweather/provider/db_provider.dart';
+
 import 'package:radarweather/provider/weather_provider.dart';
 import 'package:radarweather/widgets/current/card_info_today.dart';
 import 'package:radarweather/widgets/current/current_weather_info.dart';
@@ -29,7 +28,7 @@ class _ForecastState extends State<Forecast> {
   Iterable<Iterable<Hourly>>? hourly;
   WeatherCurrent? weatherCurrent;
   Iterable<ForecastDays>? forecastDays;
-  AemetIdPoblaciones? aemetIdPoblaciones;
+
   @override
   void initState() {
     // La diferencia clave entre read y watch es que read proporciona una
@@ -40,7 +39,6 @@ class _ForecastState extends State<Forecast> {
 
     weatherProvider = context.read<WeatherProvider>();
     weatherProvider!.getLocation();
-    weatherProvider!.getDataPoblaciones();
 
     super.initState();
   }
@@ -52,7 +50,6 @@ class _ForecastState extends State<Forecast> {
       currentWeather = weatherProvider!.getCurrentDataWeather();
       hourly = weatherProvider!.getHourlyDataWeather();
       forecastDays = weatherProvider!.getForecastDays();
-      DbProvider.db.database;
 
       //aemetIdPoblaciones = weatherProvider!.getPoblaciones();
       //print(aemetIdPoblaciones);
