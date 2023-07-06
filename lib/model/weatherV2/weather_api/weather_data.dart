@@ -6,10 +6,8 @@ import 'package:radarweather/model/weatherV2/weather_api/weather_hourly.dart';
 
 class WeatherData {
   WeatherApi? weatherApi;
-
   CurrentWeather? currentWeather;
   Hourly? hourly;
-
   ForecastDays? forecastDays;
 
   WeatherData([this.weatherApi]);

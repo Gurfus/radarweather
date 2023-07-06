@@ -1,5 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>   
+
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <application
         android:label="radarweather"
         android:name="${applicationName}"
@@ -31,7 +37,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-            <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyDFm24PBCTiYRB8e3LhMAHe9UArndfFUHQ"/>
+            <!-- <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyDFm24PBCTiYRB8e3LhMAHe9UArndfFUHQ"/> -->
     </application>
 </manifest>

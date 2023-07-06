@@ -8,7 +8,7 @@ class WeatherDailyAemet {
   String? provincia;
   Prediccion? prediccion;
   int? id;
-  int? version;
+  double? version;
 
   WeatherDailyAemet({
     this.origen,
@@ -32,7 +32,7 @@ class WeatherDailyAemet {
           ? null
           : Prediccion.fromJson(json['prediccion'] as Map<String, dynamic>),
       id: json['id'] as int?,
-      version: json['version'] as int?,
+      version: json['version'] as double?,
     );
   }
 
@@ -45,4 +45,7 @@ class WeatherDailyAemet {
         'id': id,
         'version': version,
       };
+
+  WeatherDailyAemet getDailyAemetEntity() =>
+      WeatherDailyAemet(elaborado: elaborado, prediccion: prediccion);
 }

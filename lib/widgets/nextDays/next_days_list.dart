@@ -6,9 +6,10 @@ import 'package:lottie/lottie.dart';
 class ForecastDayList extends StatelessWidget {
   double? tempMax;
   double? tempMin;
-  int? timeEpoch;
+  String? timeEpoch;
+  bool? esAemet;
   double? totalprecipMm;
-  int? code;
+  String? code;
   double? maxWind;
 
   ForecastDayList(
@@ -18,12 +19,18 @@ class ForecastDayList extends StatelessWidget {
       this.tempMax,
       this.tempMin,
       this.timeEpoch,
-      this.totalprecipMm});
+      this.totalprecipMm,
+      this.esAemet});
 
   String getTime(final timeStamp) {
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
-    String formattedTime = DateFormat('EEEE').format(dateTime);
-
+    String formattedTime;
+    if (esAemet!) {
+      DateTime dateTimeAemet = DateTime.parse(timeStamp);
+      formattedTime = DateFormat('E').format(dateTimeAemet);
+    } else {
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+      formattedTime = DateFormat('E').format(dateTime);
+    }
     return formattedTime;
   }
 
@@ -33,20 +40,26 @@ class ForecastDayList extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Container(
+          height: 20,
+          width: 33,
           margin: const EdgeInsets.symmetric(vertical: 10),
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          //padding: EdgeInsets.symmetric(horizontal: 10),
           child: Text(
             getTime(timeEpoch),
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white, fontSize: 13),
           ),
         ),
-        Container(
-            child:
-                Lottie.asset('assets/1/${code}.json', width: 32, height: 32)),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('$totalprecipMm mm',
+            Lottie.asset('assets/aemetIcons/aemet/$code.json',
+                width: 32, height: 32),
+          ],
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('$totalprecipMm %',
                 style: const TextStyle(color: Colors.white)),
           ],
         ),

@@ -1,18 +1,21 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:radarweather/model/aemetWeather/Current/current_aemet/current_aemet.dart';
+import 'package:radarweather/model/aemetWeather/weather_aemet.dart';
 
 import 'package:radarweather/provider/db_provider.dart';
 
 class GetCurrentWeatherAemet {
   String? estacion;
+  WeatherAemet? weatherAemet;
 
   getEstacion(lat, long) async {
     final resultado = await DbProvider.db.buscarEstacionCercana(lat, long);
     return resultado;
   }
 
-  getCurrentAemet(lat, lon) async {
+  Future<CurrentAemet?> getCurrentAemet(lat, lon) async {
     var estacion = await getEstacion(lat, lon);
 
     estacion = estacion.values.first;
@@ -25,13 +28,12 @@ class GetCurrentWeatherAemet {
 
     final responseWeather = await http.get(Uri.parse(data));
     var jsonWeather = jsonDecode(responseWeather.body);
-    var datas = jsonWeather;
-    print(datas);
+    Iterable datas = jsonWeather;
+    List<CurrentAemet> currentAemetDatas = List<CurrentAemet>.from(
+        datas.map((model) => CurrentAemet.fromJson(model)));
 
-    // aemetIdData = AemetIdData(
-    //   AemetIdPoblaciones.fromJson(jasonString),
-    // );
+    weatherAemet = WeatherAemet(currentAemet: currentAemetDatas.last);
 
-    // return aemetIdData!;
+    return weatherAemet!.currentAemet;
   }
 }

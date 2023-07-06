@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:radarweather/helpers/hourly/get_sort_hours.dart';
+import 'package:radarweather/model/aemetWeather/hourly/estado_cielo.dart';
+import 'package:radarweather/model/aemetWeather/hourly/temperatura.dart';
+import 'package:radarweather/model/aemetWeather/hourly/weather_hourly_aemet.dart';
 
 import '../../model/weatherV2/weather_api/weather_hourly.dart';
 
 class HourlyList extends StatefulWidget {
   final Iterable<Iterable<Hourly>> hourEntities;
-
-  const HourlyList({Key? key, required this.hourEntities}) : super(key: key);
+  final WeatherHourlyAemet? weatherHourlyAemet;
+  const HourlyList(
+      {Key? key, required this.hourEntities, this.weatherHourlyAemet})
+      : super(key: key);
 
   @override
   State<HourlyList> createState() => _HourlyListState();
@@ -17,9 +23,16 @@ class _HourlyListState extends State<HourlyList> {
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
+    now.hour;
     List<Hourly> allHours = [];
+    //ordena las horas segun la hora actual
+    var sortedHours = getSortHours(widget.weatherHourlyAemet!);
+
+    List<Temperatura> allHoras = sortedHours[1];
+    List<EstadoCielo> allEstadoCielo = sortedHours[0];
     int currentIndex = 0;
     int showBorder = 0;
+
     //guardamos las siguentes horas, x3 dias
     for (Iterable<Hourly> dayHours in widget.hourEntities) {
       allHours.addAll(dayHours);
@@ -40,26 +53,29 @@ class _HourlyListState extends State<HourlyList> {
       padding: const EdgeInsets.only(top: 10, bottom: 20),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: 25,
+        itemCount: 13,
         itemBuilder: (context, index) {
           int hourIndex = currentIndex + index;
 
           if (hourIndex < allHours.length) {
             Hourly hourly = allHours[hourIndex];
-            return Container(
-              width: 90,
-              margin: const EdgeInsets.only(left: 20, right: 5),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.transparent,
-                  border: showBorder == index
-                      ? Border.all(color: Colors.blue)
-                      : Border.all(color: Colors.transparent)),
-              child: HourlyDetails(
-                index: index,
-                temp: hourly.tempC as double,
-                timeStamp: hourly.timeEpoch as int,
-                weatherIcon: hourly.condition!.code as int,
+            return SingleChildScrollView(
+              child: Container(
+                width: 90,
+                margin: const EdgeInsets.only(left: 20, right: 5),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.transparent,
+                    border: showBorder == index
+                        ? Border.all(color: Colors.blue)
+                        : Border.all(color: Colors.transparent)),
+                child: HourlyDetails(
+                  esAemet: true,
+                  index: index,
+                  temp: int.parse(allHoras.elementAt(index).value!),
+                  timeStamp: allHoras.elementAt(index).periodo!,
+                  weatherIcon: allEstadoCielo.elementAt(index).value,
+                ),
               ),
             );
           } else {
@@ -73,23 +89,28 @@ class _HourlyListState extends State<HourlyList> {
 
 // hourly details class
 class HourlyDetails extends StatelessWidget {
-  double temp;
+  int temp;
   int index;
-
-  int timeStamp;
-  int weatherIcon;
+  bool esAemet;
+  dynamic timeStamp;
+  dynamic weatherIcon;
 
   HourlyDetails(
       {Key? key,
       required this.index,
       required this.timeStamp,
       required this.temp,
-      required this.weatherIcon})
+      required this.weatherIcon,
+      required this.esAemet})
       : super(key: key);
   String getTime(final timeStamp) {
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
-    String formattedTime = DateFormat('HH:mm').format(dateTime);
-
+    String formattedTime;
+    if (esAemet) {
+      formattedTime = '$timeStamp:00';
+    } else {
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+      formattedTime = DateFormat('HH:mm').format(dateTime);
+    }
     return formattedTime;
   }
 
@@ -107,8 +128,8 @@ class HourlyDetails extends StatelessWidget {
         ),
         Container(
           margin: const EdgeInsets.all(5),
-          child: Lottie.asset('assets/1/${weatherIcon}.json',
-              width: 52, height: 52),
+          child: Lottie.asset('assets/aemetIcons/aemet/$weatherIcon.json',
+              width: 48, height: 48),
         ),
         Container(
           margin: const EdgeInsets.only(bottom: 10),

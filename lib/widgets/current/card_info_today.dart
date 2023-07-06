@@ -1,15 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:radarweather/entities/current_weather.dart';
+import 'package:radarweather/model/aemetWeather/Current/current_aemet/current_aemet.dart';
+import 'package:radarweather/model/aemetWeather/Daily/weather_daily_aemet.dart';
+import 'package:radarweather/model/aemetWeather/hourly/weather_hourly_aemet.dart';
 
 class CardInfoToday extends StatelessWidget {
   final CurrentWeather currentWeather;
+  final CurrentAemet? currentAemet;
+  final WeatherHourlyAemet? weatherHourlyAemet;
+
+  final WeatherDailyAemet? weatherDailyAemet;
   const CardInfoToday({
     super.key,
     required this.currentWeather,
+    this.currentAemet,
+    this.weatherHourlyAemet,
+    this.weatherDailyAemet,
   });
 
   @override
   Widget build(BuildContext context) {
+    // print(weatherDailyAemet?.prediccion?.dia?.first.viento?.first.velocidad);
+
+    dynamic lastUpdate = currentAemet?.fint;
+    DateTime dateTimeAemet = DateTime.parse(lastUpdate!);
+    lastUpdate = DateFormat('k').format(dateTimeAemet);
+    var intUpdate = int.parse(lastUpdate);
+    intUpdate += 2;
     return Card(
       clipBehavior: Clip.hardEdge,
       elevation: 6,
@@ -20,24 +38,26 @@ class CardInfoToday extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              SizedBox(width: 5),
               Text(
-                '${currentWeather.humidity}%',
+                '${currentAemet?.hr}%',
                 style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(
                 width: 10,
               ),
               Text(
-                '${currentWeather.wSpeed} Km/h',
+                'Última act: ${intUpdate} - ${currentAemet!.idema}',
                 style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(
                 width: 10,
               ),
               Text(
-                '${currentWeather.precipMm} mm',
+                '${currentAemet?.prec} mm',
                 style: const TextStyle(color: Colors.white),
-              )
+              ),
+              SizedBox(width: 5)
             ],
           )),
     );

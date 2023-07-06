@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -24,6 +26,15 @@ class DbProvider {
   Future<Database> initDB() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentDirectory.path, 'idPoblaciones.db');
+    // Copy from asset
+    ByteData data =
+        await rootBundle.load(join("assets", "database", "idPoblaciones.db"));
+    List<int> bytes =
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+
+    // Write and flush the bytes written
+    await File(path).writeAsBytes(bytes, flush: true);
+
     //print(path);
 
     return await openDatabase(
@@ -53,8 +64,19 @@ class DbProvider {
       double latitud, double longitud) async {
     // Abrir la base de datos
     Directory documentDirectory = await getApplicationDocumentsDirectory();
+
     final path = join(documentDirectory.path, 'estacionesIDEMA.db');
-    Database db = await openDatabase(path);
+
+    // Copy from asset
+    ByteData data =
+        await rootBundle.load(join("assets", "database", "estacionesIDEMA.db"));
+    List<int> bytes =
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+
+    // Write and flush the bytes written
+    await File(path).writeAsBytes(bytes, flush: true);
+
+    Database db = await openDatabase(path, readOnly: true);
 
     // Consulta SQL para obtener todas las estaciones de la base de datos
     String query = 'SELECT idema,lon,lat FROM estacionesIDEMA';

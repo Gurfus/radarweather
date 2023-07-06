@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../model/aemetWeather/hourly/weather_hourly_aemet.dart';
 import '../../model/weatherV2/weather_api/weather_hourly.dart';
 
 import 'hourly_list.dart';
 
 class HourlyCard extends StatelessWidget {
   final Iterable<Iterable<Hourly>>? hourEntities;
-  const HourlyCard({super.key, this.hourEntities});
+  final WeatherHourlyAemet? weatherHourlyAemet;
+  const HourlyCard({super.key, this.hourEntities, this.weatherHourlyAemet});
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +23,15 @@ class HourlyCard extends StatelessWidget {
           Container(
             margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
             alignment: Alignment.topCenter,
-            child: const Text("Next 24 hours",
-                style: TextStyle(fontSize: 18, color: Colors.white)),
+            child: const Text("Próximas horas",
+                style: TextStyle(fontSize: 17, color: Colors.white)),
           ),
           Container(
               margin: const EdgeInsets.symmetric(horizontal: 10),
-              child: HourlyList(hourEntities: hourEntities!)),
+              child: HourlyList(
+                hourEntities: hourEntities!,
+                weatherHourlyAemet: weatherHourlyAemet,
+              )),
         ],
       ),
     );

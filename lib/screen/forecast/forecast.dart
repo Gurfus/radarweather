@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:radarweather/entities/current_weather.dart';
+import 'package:radarweather/model/aemetWeather/Current/current_aemet/current_aemet.dart';
+import 'package:radarweather/model/aemetWeather/Daily/weather_daily_aemet.dart';
 
 import 'package:radarweather/model/weather/weather_current/weather_current.dart';
 import 'package:radarweather/model/weatherV2/weather_api/weather_hourly.dart';
@@ -12,6 +14,7 @@ import 'package:radarweather/widgets/current/current_weather_info.dart';
 import 'package:radarweather/widgets/header_info.dart';
 import 'package:radarweather/widgets/nextDays/next_days_card.dart';
 
+import '../../model/aemetWeather/hourly/weather_hourly_aemet.dart';
 import '../../model/weatherV2/weather_api/weather_forecast_days.dart';
 import '../../widgets/hourly/hourly_card.dart';
 
@@ -22,9 +25,12 @@ class Forecast extends StatefulWidget {
   State<Forecast> createState() => _ForecastState();
 }
 
-class _ForecastState extends State<Forecast> {
+class _ForecastState extends State<Forecast> with WidgetsBindingObserver {
   WeatherProvider? weatherProvider;
   CurrentWeather? currentWeather;
+  CurrentAemet? currentAemet;
+  WeatherHourlyAemet? weatherHourlyAemet;
+  WeatherDailyAemet? weatherDailyAemet;
   Iterable<Iterable<Hourly>>? hourly;
   WeatherCurrent? weatherCurrent;
   Iterable<ForecastDays>? forecastDays;
@@ -39,20 +45,39 @@ class _ForecastState extends State<Forecast> {
 
     weatherProvider = context.read<WeatherProvider>();
     weatherProvider!.getLocation();
-
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    weatherProvider?.getLocation()?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  refreshData() {
+    weatherProvider?.getLocation();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      refreshData();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     weatherProvider = context.watch<WeatherProvider>();
+    refreshData();
     if (!weatherProvider!.getIsloading()) {
       currentWeather = weatherProvider!.getCurrentDataWeather();
+      currentAemet = weatherProvider?.getCurrenAemet();
+      weatherHourlyAemet = weatherProvider?.getHourlyAemet();
+      weatherDailyAemet = weatherProvider?.getDalyAemet();
       hourly = weatherProvider!.getHourlyDataWeather();
       forecastDays = weatherProvider!.getForecastDays();
-
-      //aemetIdPoblaciones = weatherProvider!.getPoblaciones();
-      //print(aemetIdPoblaciones);
     }
 
     return Scaffold(
@@ -67,37 +92,49 @@ class _ForecastState extends State<Forecast> {
             end: Alignment.bottomRight,
           ),
         ),
-        child: SafeArea(
-            child: weatherProvider!.getIsloading()
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                    ),
+        child: weatherProvider!.getIsloading()
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              )
+            : ListView(
+                scrollDirection: Axis.vertical,
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const HeaderInfo(),
+                  CurrentWeatherInfo(
+                      currentWeather: currentWeather!,
+                      currentAemet: currentAemet,
+                      weatherDailyAemet: weatherDailyAemet,
+                      weatherHourlyAemet: weatherHourlyAemet),
+                  const SizedBox(height: 10),
+                  CardInfoToday(
+                      currentWeather: currentWeather!,
+                      currentAemet: currentAemet,
+                      weatherHourlyAemet: weatherHourlyAemet,
+                      weatherDailyAemet: weatherDailyAemet),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  HourlyCard(
+                    hourEntities: hourly,
+                    weatherHourlyAemet: weatherHourlyAemet,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  NextDaysCard(
+                    forecastDays: forecastDays!,
+                    weatherDailyAemet: weatherDailyAemet,
+                  ),
+                  const SizedBox(
+                    height: 10,
                   )
-                : ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const HeaderInfo(),
-                      CurrentWeatherInfo(currentWeather: currentWeather!),
-                      const SizedBox(height: 10),
-                      CardInfoToday(currentWeather: currentWeather!),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      HourlyCard(
-                        hourEntities: hourly,
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      NextDaysCard(
-                        forecastDays: forecastDays!,
-                      )
-                    ],
-                  )),
+                ],
+              ),
       ),
     );
   }
