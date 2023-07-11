@@ -38,15 +38,16 @@ class GetHourlyWeatherAemet {
     final response = await http.get(Uri.parse(apiHourlyAemet));
     var jasonString = jsonDecode(response.body);
     var data = jasonString['datos'];
+    if (data != null) {
+      final responseWeather = await http.get(Uri.parse(data));
+      var jsonWeather = jsonDecode(responseWeather.body);
+      List<dynamic> datas = jsonWeather;
+      List<WeatherHourlyAemet> hourlyAemetDatas = List<WeatherHourlyAemet>.from(
+          datas.map((model) => WeatherHourlyAemet.fromJson(model)));
 
-    final responseWeather = await http.get(Uri.parse(data));
-    var jsonWeather = jsonDecode(responseWeather.body);
-    Iterable datas = jsonWeather;
-    List<WeatherHourlyAemet> hourlyAemetDatas = List<WeatherHourlyAemet>.from(
-        datas.map((model) => WeatherHourlyAemet.fromJson(model)));
-
-    weatherAemet = WeatherAemet(weatherHourlyAemet: hourlyAemetDatas.first);
-    print(weatherAemet?.weatherHourlyAemet?.prediccion?.dia?.first);
-    return weatherAemet!.weatherHourlyAemet;
+      weatherAemet = WeatherAemet(weatherHourlyAemet: hourlyAemetDatas.first);
+      print(weatherAemet?.weatherHourlyAemet?.prediccion?.dia?.first);
+      return weatherAemet!.weatherHourlyAemet;
+    }
   }
 }

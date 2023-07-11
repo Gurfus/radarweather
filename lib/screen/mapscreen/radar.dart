@@ -1,70 +1,186 @@
-// import 'dart:async';
-// import 'dart:convert';
-// import 'package:http/http.dart' as http;
-// import 'package:flutter/material.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:radarweather/provider/weather_provider.dart';
 
-// import 'TileProvider/forecast_tile_provider.dart';
+import 'TileProvider/forecast_tile_provider.dart';
 
-// class Radar extends StatefulWidget {
-//   const Radar({super.key});
+class Radar extends StatefulWidget {
+  const Radar({Key? key}) : super(key: key);
 
-//   @override
-//   State<Radar> createState() => RadarState();
-// }
+  @override
+  State<Radar> createState() => RadarState();
+}
 
-// class RadarState extends State<Radar> {
-//   final Completer<GoogleMapController> _controller =
-//       Completer<GoogleMapController>();
+class RadarState extends State<Radar> with SingleTickerProviderStateMixin {
+  WeatherProvider? weatherProvider;
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
 
-//   static const CameraPosition _kGooglePlex = CameraPosition(
-//     target: LatLng(42.1995, 2.1908),
-//     zoom: 8,
-//   );
+  CameraPosition? _kGooglePlex;
 
-//   void load() {
-//     http
-//         .get(Uri.parse('https://tilecache.rainviewer.com/api/maps.json'))
-//         .then((response) {
-//       if (response.statusCode == 200) {
-//         final timestamps = jsonDecode(response.body);
-//         print(timestamps);
-//         initTiles(timestamps);
-//       } else {
-//         throw Exception('Failed to load timestamps');
-//       }
-//     });
-//   }
+  List<dynamic> radarImageUrls = [];
+  int timeStampsDate = 0;
+  Timer? playbackTimer;
+  int currentIndex = 0;
+  Duration playbackInterval = const Duration(seconds: 1);
 
-//   TileOverlay? tileOverlay;
-//   Set<TileOverlay> _tileOverLays = {};
-//   initTiles(List ts) async {
-//     final String overlayId = ts[1].toString();
+  List<TileOverlay> tileOverlays = [];
 
-//     final TileOverlay tileOverlay = TileOverlay(
-//       tileOverlayId: TileOverlayId(overlayId),
-//       tileProvider: ForecastTileProvider(timeStamps: ts),
-//       zIndex: 1,
-//     );
-//     setState(() {
-//       _tileOverLays = {tileOverlay};
-//     });
-//   }
+  AnimationController? animationController;
+  Animation<double>? animation;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: GoogleMap(
-//         myLocationEnabled: true,
-//         myLocationButtonEnabled: true,
-//         mapType: MapType.normal,
-//         initialCameraPosition: _kGooglePlex,
-//         onMapCreated: (GoogleMapController controller) {
-//           _controller.complete(controller);
-//           load();
-//         },
-//         tileOverlays: _tileOverLays,
-//       ),
-//     );
-//   }
-// }
+  @override
+  void initState() {
+    super.initState();
+    weatherProvider = context.read<WeatherProvider>();
+    _kGooglePlex = CameraPosition(
+      target: LatLng(
+        weatherProvider!.getLat().toDouble(),
+        weatherProvider!.getLong().toDouble(),
+      ),
+      zoom: 8,
+    );
+    animationController = AnimationController(
+      vsync: this,
+      duration: playbackInterval,
+    );
+    animation = Tween<double>(begin: 0, end: 1).animate(animationController!);
+  }
+
+  void load() {
+    http
+        .get(Uri.parse('https://tilecache.rainviewer.com/api/maps.json'))
+        .then((response) {
+      if (response.statusCode == 200) {
+        final timestamps = jsonDecode(response.body);
+        print(timestamps);
+        setState(() {
+          radarImageUrls = timestamps;
+
+          timeStampsDate = radarImageUrls[currentIndex];
+        });
+        initTiles();
+      } else {
+        throw Exception('Failed to load timestamps');
+      }
+    });
+  }
+
+  void initTiles() {
+    final String overlayId = radarImageUrls[currentIndex].toString();
+    print(overlayId);
+
+    final TileOverlay tileOverlay = TileOverlay(
+        tileOverlayId: TileOverlayId(overlayId),
+        tileProvider:
+            ForecastTileProvider(timeStamps: radarImageUrls[currentIndex]),
+        fadeIn: false);
+    setState(() {
+      tileOverlays = [tileOverlay];
+    });
+  }
+
+  void startPlayback() {
+    currentIndex = 0;
+
+    playbackTimer?.cancel();
+
+    playbackTimer = Timer.periodic(playbackInterval, (timer) {
+      loadAndShowImage();
+
+      currentIndex++;
+
+      if (currentIndex >= radarImageUrls.length) {
+        stopPlayback();
+      }
+    });
+
+    animationController?.reset();
+    animationController?.forward();
+  }
+
+  void stopPlayback() {
+    playbackTimer?.cancel();
+    playbackTimer = null;
+    animationController?.stop();
+  }
+
+  void loadAndShowImage() {
+    if (currentIndex >= 0 && currentIndex < radarImageUrls.length) {
+      timeStampsDate = radarImageUrls[currentIndex];
+      setState(() {
+        tileOverlays =
+            []; // Elimina los overlays anteriores antes de cargar los nuevos
+      });
+      initTiles();
+    }
+  }
+
+  @override
+  void dispose() {
+    playbackTimer?.cancel();
+    animationController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          GoogleMap(
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            mapType: MapType.terrain,
+            trafficEnabled: false,
+            initialCameraPosition: _kGooglePlex!,
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+              load();
+            },
+            tileOverlays: Set<TileOverlay>.from(tileOverlays),
+          ),
+          AnimatedBuilder(
+            animation: animation!,
+            builder: (context, child) {
+              return Opacity(
+                opacity: animation!.value,
+                child: child!,
+              );
+            },
+            child: Container(
+                // Contenido de la animación
+                ),
+          ),
+          Container(
+              alignment: Alignment.bottomCenter,
+              child: Text('${getTime(timeStampsDate)}'))
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (playbackTimer == null) {
+            startPlayback();
+          } else {
+            stopPlayback();
+          }
+        },
+        child: Icon(playbackTimer == null ? Icons.play_arrow : Icons.stop),
+      ),
+    );
+  }
+
+  String getTime(final timeStamp) {
+    String formattedTime;
+
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+    formattedTime = DateFormat('MMMMd').add_Hm().format(dateTime);
+
+    return formattedTime;
+  }
+}

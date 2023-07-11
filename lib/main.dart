@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:radarweather/provider/weather_provider.dart';
 import 'package:radarweather/screen/forecast/forecast.dart';
+import 'package:radarweather/screen/home/home_page.dart';
 //import 'package:radarweather/screen/mapscreen/radar.dart';
 
 void main() {
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
               background: const Color.fromARGB(219, 70, 54, 255)),
           useMaterial3: true,
         ),
-        home: const Forecast(),
+        home: const HomePage(),
       ),
     );
   }

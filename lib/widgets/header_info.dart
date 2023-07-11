@@ -59,7 +59,7 @@ class _HeaderInfoState extends State<HeaderInfo> {
                     setState(() {
                       animate = true;
 
-                      weatherProvider.setIsloadinng(true);
+                      // weatherProvider.setIsloadinng(true);
                     });
 
                     await weatherProvider.getDataApi(
@@ -68,7 +68,7 @@ class _HeaderInfoState extends State<HeaderInfo> {
                     Future.delayed(const Duration(milliseconds: 500), () {
                       setState(() async {
                         animate = false;
-                        weatherProvider.setIsloadinng(false);
+                        //weatherProvider.setIsloadinng(false);
                       });
                     });
                     Fluttertoast.showToast(

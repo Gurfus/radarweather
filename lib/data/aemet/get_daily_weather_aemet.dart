@@ -5,11 +5,13 @@ import 'package:radarweather/model/aemetWeather/Daily/weather_daily_aemet.dart';
 import 'package:radarweather/model/aemetWeather/weather_aemet.dart';
 
 import 'package:radarweather/provider/db_provider.dart';
+import 'package:radarweather/provider/weather_provider.dart';
 
 class GetDailyWeatherAemet {
   String? city;
   WeatherDailyAemet? weatherDailyAemet;
   WeatherAemet? weatherAemet;
+  WeatherProvider? weatherProvider;
 
   getLocation(lat, lon) async {
     List<Placemark> placemark = await placemarkFromCoordinates(lat, lon);
@@ -37,15 +39,15 @@ class GetDailyWeatherAemet {
     final response = await http.get(Uri.parse(apiDailyAemet));
     var jasonString = jsonDecode(response.body);
     var data = jasonString['datos'];
+    if (data != null) {
+      final responseWeather = await http.get(Uri.parse(data));
+      var jsonWeather = jsonDecode(responseWeather.body);
+      List<dynamic> datas = jsonWeather;
+      List<WeatherDailyAemet> dailyAemetDatas = List<WeatherDailyAemet>.from(
+          datas.map((model) => WeatherDailyAemet.fromJson(model)));
 
-    final responseWeather = await http.get(Uri.parse(data));
-    var jsonWeather = jsonDecode(responseWeather.body);
-    Iterable datas = jsonWeather;
-    List<WeatherDailyAemet> dailyAemetDatas = List<WeatherDailyAemet>.from(
-        datas.map((model) => WeatherDailyAemet.fromJson(model)));
-
-    weatherAemet = WeatherAemet(weatherDailyAemet: dailyAemetDatas.first);
-
-    return weatherAemet!.weatherDailyAemet;
+      weatherAemet = WeatherAemet(weatherDailyAemet: dailyAemetDatas.first);
+      return weatherAemet!.weatherDailyAemet;
+    }
   }
 }

@@ -51,7 +51,7 @@ class _ForecastState extends State<Forecast> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    weatherProvider?.getLocation()?.cancel();
+    //weatherProvider?.getLocation()?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -70,7 +70,7 @@ class _ForecastState extends State<Forecast> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     weatherProvider = context.watch<WeatherProvider>();
-    refreshData();
+    //refreshData();
     if (!weatherProvider!.getIsloading()) {
       currentWeather = weatherProvider!.getCurrentDataWeather();
       currentAemet = weatherProvider?.getCurrenAemet();
