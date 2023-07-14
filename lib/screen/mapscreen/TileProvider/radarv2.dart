@@ -7,30 +7,30 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:radarweather/provider/weather_provider.dart';
 
-import 'TileProvider/forecast_tile_provider.dart';
+import 'forecast_tile_provider.dart';
 
-class Radar extends StatefulWidget {
-  const Radar({Key? key}) : super(key: key);
+class Radarv2 extends StatefulWidget {
+  const Radarv2({Key? key}) : super(key: key);
 
   @override
-  State<Radar> createState() => RadarState();
+  State<Radarv2> createState() => Radarv2State();
 }
 
-class RadarState extends State<Radar> with SingleTickerProviderStateMixin {
+class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
   WeatherProvider? weatherProvider;
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
   CameraPosition? _kGooglePlex;
-  TileOverlay? newTileOverlay;
-  TileOverlay? tileOverlay;
   List<dynamic> radarImageUrls = [];
-  int timeStampsDate = 0;
+
   Timer? playbackTimer;
   int currentIndex = 0;
-  Duration playbackInterval = const Duration(milliseconds: 1500);
-
+  Duration playbackInterval = const Duration(seconds: 1);
+  int timeStampsDate = 0;
   List<TileOverlay> tileOverlays = [];
+  TileOverlay? currentTileOverlay;
+  TileOverlay? nextTileOverlay;
 
   AnimationController? animationController;
   Animation<double>? animation;
@@ -62,8 +62,6 @@ class RadarState extends State<Radar> with SingleTickerProviderStateMixin {
         print(timestamps);
         setState(() {
           radarImageUrls = timestamps;
-
-          timeStampsDate = radarImageUrls[currentIndex];
         });
         initTiles();
       } else {
@@ -73,26 +71,37 @@ class RadarState extends State<Radar> with SingleTickerProviderStateMixin {
   }
 
   void initTiles() {
-    final String overlayId = radarImageUrls[currentIndex].toString();
-    print(overlayId);
+    final int currentOverlayId = radarImageUrls[currentIndex];
+    if (radarImageUrls.last == radarImageUrls[currentIndex]) {
+      currentTileOverlay = TileOverlay(
+          tileOverlayId: TileOverlayId(currentOverlayId.toString()),
+          tileProvider: ForecastTileProvider(timeStamps: currentOverlayId),
+          zIndex: currentOverlayId,
+          tileSize: 512,
+          fadeIn: false);
+    } else {
+      final int nextOverlayId =
+          radarImageUrls[(currentIndex + 1) % radarImageUrls.length];
+      print(currentOverlayId);
+      print(nextOverlayId);
 
-    tileOverlay = TileOverlay(
-        tileOverlayId: TileOverlayId(overlayId),
-        tileProvider:
-            ForecastTileProvider(timeStamps: radarImageUrls[currentIndex]),
-        zIndex: 1,
-        transparency: 0.0,
-        fadeIn: false);
-    newTileOverlay = TileOverlay(
-        tileOverlayId: TileOverlayId(overlayId),
-        tileProvider:
-            ForecastTileProvider(timeStamps: radarImageUrls[currentIndex + 1]),
-        zIndex: 10,
-        transparency: 0.0,
-        fadeIn: false);
+      currentTileOverlay = TileOverlay(
+          tileOverlayId: TileOverlayId(currentOverlayId.toString()),
+          tileProvider: ForecastTileProvider(timeStamps: currentOverlayId),
+          zIndex: currentOverlayId,
+          tileSize: 512,
+          fadeIn: false);
+
+      nextTileOverlay = TileOverlay(
+          tileOverlayId: TileOverlayId(nextOverlayId.toString()),
+          tileProvider: ForecastTileProvider(timeStamps: nextOverlayId),
+          zIndex: nextOverlayId,
+          tileSize: 512,
+          fadeIn: false);
+    }
 
     setState(() {
-      tileOverlays = [tileOverlay!!];
+      tileOverlays = [currentTileOverlay!];
     });
   }
 
@@ -102,11 +111,10 @@ class RadarState extends State<Radar> with SingleTickerProviderStateMixin {
     playbackTimer?.cancel();
 
     playbackTimer = Timer.periodic(playbackInterval, (timer) {
-      loadAndShowImage();
-
-      currentIndex++;
-
-      if (currentIndex >= radarImageUrls.length) {
+      if (currentIndex < radarImageUrls.length - 1) {
+        loadAndShowImage();
+        currentIndex++;
+      } else {
         stopPlayback();
       }
     });
@@ -123,16 +131,16 @@ class RadarState extends State<Radar> with SingleTickerProviderStateMixin {
 
   Future<void> loadAndShowImage() async {
     if (currentIndex >= 0 && currentIndex < radarImageUrls.length) {
+      String imageUrl = radarImageUrls[currentIndex].toString();
       timeStampsDate = radarImageUrls[currentIndex];
-
       setState(() {
-        tileOverlays.add(newTileOverlay!);
+        tileOverlays.add(nextTileOverlay!);
       });
 
-      await Future.delayed(const Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 50));
 
       setState(() {
-        tileOverlays.remove(tileOverlay!);
+        tileOverlays.remove(currentTileOverlay!);
       });
 
       initTiles();

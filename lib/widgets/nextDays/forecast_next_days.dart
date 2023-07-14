@@ -7,10 +7,8 @@ import '../../model/aemetWeather/Daily/weather_daily_aemet.dart';
 import 'next_days_list.dart';
 
 class ForecastNext extends StatelessWidget {
-  final Iterable<ForecastDays> forecastDays;
   final WeatherDailyAemet? weatherDailyAemet;
-  const ForecastNext(
-      {super.key, required this.forecastDays, this.weatherDailyAemet});
+  const ForecastNext({super.key, this.weatherDailyAemet});
 
   @override
   Widget build(BuildContext context) {

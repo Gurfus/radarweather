@@ -4,32 +4,41 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/weather_provider.dart';
 
 class HeaderInfo extends StatefulWidget {
-  const HeaderInfo({super.key});
+  final String? cityName;
+  const HeaderInfo({super.key, this.cityName});
 
   @override
   State<HeaderInfo> createState() => _HeaderInfoState();
 }
 
 class _HeaderInfoState extends State<HeaderInfo> {
-  String city = '';
+  String? city = '';
   String date = DateFormat("yMMMMd").format(DateTime.now());
   bool animate = false;
+
   @override
   Widget build(BuildContext context) {
     final weatherProvider = context.watch<WeatherProvider>();
 
-    city = weatherProvider.getCityName();
-    if (city != weatherProvider.cityName) {
-      setState(() {
-        city;
-      });
-    }
+    // city = weatherProvider.getCityName();
 
+    // if (city != weatherProvider.cityName) {
+    //   setState(() {
+    //     city;
+    //   });
+    // }
+
+    if (widget.cityName == null) {
+      city = weatherProvider.getCityName();
+    } else {
+      city = widget.cityName;
+    }
     return Column(
       children: [
         Row(
@@ -41,12 +50,13 @@ class _HeaderInfoState extends State<HeaderInfo> {
                     margin: const EdgeInsets.only(left: 20, right: 20),
                     alignment: Alignment.topLeft,
                     child: Text(
-                      city,
+                      city!,
                       style: const TextStyle(fontSize: 22, color: Colors.white),
                     )),
               ],
             ),
             Container(
+              margin: const EdgeInsets.only(left: 10, right: 10),
               alignment: Alignment.topRight,
               child: Spin(
                 //duration: Duration(milliseconds: 2000),
@@ -66,7 +76,7 @@ class _HeaderInfoState extends State<HeaderInfo> {
                         weatherProvider.getLat(), weatherProvider.getLong());
                     city = weatherProvider.getCityName();
                     Future.delayed(const Duration(milliseconds: 500), () {
-                      setState(() async {
+                      setState(() {
                         animate = false;
                         //weatherProvider.setIsloadinng(false);
                       });
@@ -77,9 +87,10 @@ class _HeaderInfoState extends State<HeaderInfo> {
                         backgroundColor: Colors.green,
                         timeInSecForIosWeb: 1);
                   },
+                  elevation: 0,
                   backgroundColor: Colors.transparent,
                   child: const Icon(
-                    Icons.refresh_rounded,
+                    LineIcons.syncIcon,
                     color: Colors.white,
                   ),
                 ),

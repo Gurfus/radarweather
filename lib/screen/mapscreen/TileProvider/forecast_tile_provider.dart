@@ -20,7 +20,7 @@ class ForecastTileProvider implements TileProvider {
     } else {
       try {
         final url =
-            "https://tilecache.rainviewer.com/v2/radar/$timeStamps/256/$zoom/$x/$y/2/1_1.png";
+            "https://tilecache.rainviewer.com/v2/radar/$timeStamps/512/$zoom/$x/$y/2/1_1.png";
         final uri = Uri.parse(url);
         final ByteData imageData = await NetworkAssetBundle(uri).load("");
         tileBytes = imageData.buffer.asUint8List();
@@ -32,7 +32,7 @@ class ForecastTileProvider implements TileProvider {
       }
     }
 
-    return Tile(256, 256, tileBytes);
+    return Tile(512, 512, tileBytes);
   }
 }
 

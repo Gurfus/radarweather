@@ -6,10 +6,8 @@ import '../../model/aemetWeather/Daily/weather_daily_aemet.dart';
 import '../../model/weatherV2/weather_api/weather_forecast_days.dart';
 
 class NextDaysCard extends StatelessWidget {
-  final Iterable<ForecastDays> forecastDays;
   final WeatherDailyAemet? weatherDailyAemet;
-  const NextDaysCard(
-      {super.key, required this.forecastDays, this.weatherDailyAemet});
+  const NextDaysCard({super.key, this.weatherDailyAemet});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +28,6 @@ class NextDaysCard extends StatelessWidget {
               height: 350,
               margin: const EdgeInsets.symmetric(horizontal: 10),
               child: ForecastNext(
-                forecastDays: forecastDays,
                 weatherDailyAemet: weatherDailyAemet,
               )),
         ],

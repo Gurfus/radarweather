@@ -6,14 +6,12 @@ import 'package:radarweather/model/aemetWeather/Daily/weather_daily_aemet.dart';
 import 'package:radarweather/model/aemetWeather/hourly/weather_hourly_aemet.dart';
 
 class CardInfoToday extends StatelessWidget {
-  final CurrentWeather currentWeather;
   final CurrentAemet? currentAemet;
   final WeatherHourlyAemet? weatherHourlyAemet;
 
   final WeatherDailyAemet? weatherDailyAemet;
   const CardInfoToday({
     super.key,
-    required this.currentWeather,
     this.currentAemet,
     this.weatherHourlyAemet,
     this.weatherDailyAemet,

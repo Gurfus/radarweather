@@ -9,11 +9,8 @@ import 'package:radarweather/model/aemetWeather/hourly/weather_hourly_aemet.dart
 import '../../model/weatherV2/weather_api/weather_hourly.dart';
 
 class HourlyList extends StatefulWidget {
-  final Iterable<Iterable<Hourly>> hourEntities;
   final WeatherHourlyAemet? weatherHourlyAemet;
-  const HourlyList(
-      {Key? key, required this.hourEntities, this.weatherHourlyAemet})
-      : super(key: key);
+  const HourlyList({Key? key, this.weatherHourlyAemet}) : super(key: key);
 
   @override
   State<HourlyList> createState() => _HourlyListState();
@@ -34,19 +31,19 @@ class _HourlyListState extends State<HourlyList> {
     int showBorder = 0;
 
     //guardamos las siguentes horas, x3 dias
-    for (Iterable<Hourly> dayHours in widget.hourEntities) {
-      allHours.addAll(dayHours);
-    }
+    // for (Iterable<Hourly> dayHours in widget.hourEntities) {
+    //   allHours.addAll(dayHours);
+    // }
 
     // Encontrar el índice de la hora actual más cercana
-    for (int i = 0; i < allHours.length; i++) {
-      DateTime hourlyTime =
-          DateTime.fromMillisecondsSinceEpoch(allHours[i].timeEpoch! * 1000);
-      if (hourlyTime.isAfter(now)) {
-        currentIndex = i;
-        break;
-      }
-    }
+    // for (int i = 0; i < allHours.length; i++) {
+    //   DateTime hourlyTime =
+    //       DateTime.fromMillisecondsSinceEpoch(allHours[i].timeEpoch! * 1000);
+    //   if (hourlyTime.isAfter(now)) {
+    //     currentIndex = i;
+    //     break;
+    //   }
+    // }
 
     return Container(
       height: 160,
@@ -57,8 +54,8 @@ class _HourlyListState extends State<HourlyList> {
         itemBuilder: (context, index) {
           int hourIndex = currentIndex + index;
 
-          if (hourIndex < allHours.length) {
-            Hourly hourly = allHours[hourIndex];
+          if (hourIndex < allHoras.length) {
+            // Hourly hourly = allHours[hourIndex];
             return SingleChildScrollView(
               child: Container(
                 width: 90,

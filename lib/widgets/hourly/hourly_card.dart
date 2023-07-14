@@ -7,9 +7,8 @@ import '../../model/weatherV2/weather_api/weather_hourly.dart';
 import 'hourly_list.dart';
 
 class HourlyCard extends StatelessWidget {
-  final Iterable<Iterable<Hourly>>? hourEntities;
   final WeatherHourlyAemet? weatherHourlyAemet;
-  const HourlyCard({super.key, this.hourEntities, this.weatherHourlyAemet});
+  const HourlyCard({super.key, this.weatherHourlyAemet});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +28,6 @@ class HourlyCard extends StatelessWidget {
           Container(
               margin: const EdgeInsets.symmetric(horizontal: 10),
               child: HourlyList(
-                hourEntities: hourEntities!,
                 weatherHourlyAemet: weatherHourlyAemet,
               )),
         ],

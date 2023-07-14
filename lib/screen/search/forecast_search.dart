@@ -17,16 +17,17 @@ import 'package:radarweather/widgets/nextDays/next_days_card.dart';
 
 import '../../model/aemetWeather/hourly/weather_hourly_aemet.dart';
 import '../../model/weatherV2/weather_api/weather_forecast_days.dart';
+import '../../provider/search_provider.dart';
 import '../../widgets/hourly/hourly_card.dart';
 
-class Forecast extends StatefulWidget {
-  const Forecast({super.key});
+class ForecastSearch extends StatefulWidget {
+  const ForecastSearch({super.key});
 
   @override
-  State<Forecast> createState() => _ForecastState();
+  State<ForecastSearch> createState() => _ForecastSearchState();
 }
 
-class _ForecastState extends State<Forecast> with WidgetsBindingObserver {
+class _ForecastSearchState extends State<ForecastSearch> {
   WeatherProvider? weatherProvider;
   CurrentWeather? currentWeather;
   CurrentAemet? currentAemet;
@@ -35,8 +36,8 @@ class _ForecastState extends State<Forecast> with WidgetsBindingObserver {
   Iterable<Iterable<Hourly>>? hourly;
   WeatherCurrent? weatherCurrent;
   Iterable<ForecastDays>? forecastDays;
+  SearchProvider? searchProvider;
   String? cityName;
-
   @override
   void initState() {
     // La diferencia clave entre read y watch es que read proporciona una
@@ -45,39 +46,17 @@ class _ForecastState extends State<Forecast> with WidgetsBindingObserver {
     //reconstruye el widget cuando ocurren cambios en el mismo. En este caso, a
     //l utilizar read en initState(), nos aseguramos de que la ubicación se obtenga solo una vez y no se vuelva a llamar automáticamente cuando haya cambios en el proveedor.
 
-    weatherProvider = context.read<WeatherProvider>();
-    weatherProvider!.getLocation();
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
   @override
-  void dispose() {
-    //weatherProvider?.getLocation()?.cancel();
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  refreshData() {
-    weatherProvider?.getLocation();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      refreshData();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    weatherProvider = context.watch<WeatherProvider>();
-
-    if (!weatherProvider!.getIsloading()) {
-      currentAemet = weatherProvider?.getCurrenAemet();
-      weatherHourlyAemet = weatherProvider?.getHourlyAemet();
-      weatherDailyAemet = weatherProvider?.getDalyAemet();
-      cityName = weatherProvider?.getCityName();
+    searchProvider = context.watch<SearchProvider>();
+    if (!searchProvider!.getIsloading()) {
+      currentAemet = searchProvider?.getCurrenAemet();
+      weatherHourlyAemet = searchProvider?.getHourlyAemet();
+      weatherDailyAemet = searchProvider?.getDalyAemet();
+      cityName = searchProvider?.getCityName();
     }
 
     return Scaffold(
@@ -92,20 +71,30 @@ class _ForecastState extends State<Forecast> with WidgetsBindingObserver {
             end: Alignment.topRight,
           ),
         ),
-        child: weatherProvider!.getIsloading()
+        child: searchProvider!.getIsloading()
             ? Center(
-                child: LoadingAnimationWidget.threeArchedCircle(
-                  color: Colors.yellow,
-                  size: 40,
+                child: Column(
+                  children: [
+                    LoadingAnimationWidget.threeArchedCircle(
+                      color: Colors.yellow,
+                      size: 40,
+                    ),
+                    const Text(
+                      'Cargando..',
+                      style: TextStyle(fontSize: 20, color: Colors.yellow),
+                    )
+                  ],
                 ),
               )
             : ListView(
                 scrollDirection: Axis.vertical,
                 children: [
                   const SizedBox(
-                    height: 30,
+                    height: 1,
                   ),
-                  HeaderInfo(cityName: cityName),
+                  HeaderInfo(
+                    cityName: cityName,
+                  ),
                   CurrentWeatherInfo(
                       currentAemet: currentAemet,
                       weatherDailyAemet: weatherDailyAemet,

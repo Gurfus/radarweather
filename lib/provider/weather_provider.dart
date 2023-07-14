@@ -28,8 +28,10 @@ class WeatherProvider extends ChangeNotifier {
   WeatherData? weatherData;
   WeatherCurrent? weatherCurrent;
   String? cityName;
+  bool geolocatorOn = true;
   var weatherAemet = WeatherAemet();
 
+  StreamSubscription<Position>? positionStreamSubscription;
   DbProvider? dbProvider;
 
   getCurrentDataWeather() {
@@ -64,10 +66,18 @@ class WeatherProvider extends ChangeNotifier {
     _isLoading = loading;
   }
 
+  setCityName(String name) {
+    cityName = name;
+  }
+
+  cancelSubcriptionn(bool onOff) {
+    geolocatorOn = onOff;
+    positionStreamSubscription?.pause();
+  }
+
   getLocation() async {
     bool isServiceOk;
     LocationPermission locationPermission;
-    StreamSubscription<Position>? positionStreamSubscription;
     isServiceOk = await Geolocator.isLocationServiceEnabled();
     if (!isServiceOk) {
       return Future.error('Service not ok');
@@ -102,6 +112,7 @@ class WeatherProvider extends ChangeNotifier {
         cityName = newCity;
         getDataApi(lat, long);
         print('data nueva');
+
         notifyListeners();
       }
       searchTimer!.cancel();
@@ -114,6 +125,7 @@ class WeatherProvider extends ChangeNotifier {
   }
 
   getDataApi(lat, long) async {
+    _isLoading = true;
     await GetCurrentWeatherAemet().getCurrentAemet(lat, long).then((current) {
       weatherAemet.currentAemet = current;
       notifyListeners();
@@ -127,20 +139,37 @@ class WeatherProvider extends ChangeNotifier {
         .getHourlyWeatherAemet(lat, long)
         .then((hourly) {
       weatherAemet.weatherHourlyAemet = hourly;
-      notifyListeners();
-    });
-    //getIdema(lat, long);
-    return GetCurrentWeather().getData(lat, long).then((value) {
-      weatherData = value;
-
       _isLoading = false;
       notifyListeners();
     });
+    //getIdema(lat, long);
   }
 
   getLocatonHeader(lat, lon) async {
     List<Placemark> placemark = await placemarkFromCoordinates(lat, lon);
     Placemark place = placemark[0];
+
+    ///cityName = place.locality;
     return place.locality;
+  }
+
+  Future<Location?> getCoordinates(String cityName) async {
+    try {
+      List<Location> locations = await locationFromAddress(cityName);
+      if (locations.isNotEmpty) {
+        Location location = locations.first;
+        double latitude = location.latitude;
+        double longitude = location.longitude;
+        print(
+            'Coordenadas de $cityName: Latitud: $latitude, Longitud: $longitude');
+        return location;
+      } else {
+        print('No se encontraron coordenadas para $cityName');
+        return null;
+      }
+    } catch (e) {
+      print('Error al obtener las coordenadas de $cityName: $e');
+      return null;
+    }
   }
 }
