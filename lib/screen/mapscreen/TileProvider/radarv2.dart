@@ -77,7 +77,7 @@ class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
           tileOverlayId: TileOverlayId(currentOverlayId.toString()),
           tileProvider: ForecastTileProvider(timeStamps: currentOverlayId),
           zIndex: currentOverlayId,
-          tileSize: 512,
+          tileSize: 256,
           fadeIn: false);
     } else {
       final int nextOverlayId =
@@ -89,14 +89,14 @@ class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
           tileOverlayId: TileOverlayId(currentOverlayId.toString()),
           tileProvider: ForecastTileProvider(timeStamps: currentOverlayId),
           zIndex: currentOverlayId,
-          tileSize: 512,
+          tileSize: 256,
           fadeIn: false);
 
       nextTileOverlay = TileOverlay(
           tileOverlayId: TileOverlayId(nextOverlayId.toString()),
           tileProvider: ForecastTileProvider(timeStamps: nextOverlayId),
           zIndex: nextOverlayId,
-          tileSize: 512,
+          tileSize: 256,
           fadeIn: false);
     }
 
@@ -137,7 +137,7 @@ class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
         tileOverlays.add(nextTileOverlay!);
       });
 
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       setState(() {
         tileOverlays.remove(currentTileOverlay!);

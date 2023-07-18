@@ -147,10 +147,13 @@ class WeatherProvider extends ChangeNotifier {
 
   getLocatonHeader(lat, lon) async {
     List<Placemark> placemark = await placemarkFromCoordinates(lat, lon);
-    Placemark place = placemark[0];
-
-    ///cityName = place.locality;
-    return place.locality;
+    String? city;
+    for (var ubi in placemark) {
+      if (ubi.locality != '') {
+        city = ubi.locality;
+      }
+    }
+    return city;
   }
 
   Future<Location?> getCoordinates(String cityName) async {

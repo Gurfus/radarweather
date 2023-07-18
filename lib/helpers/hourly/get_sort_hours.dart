@@ -15,25 +15,24 @@ getSortHours(WeatherHourlyAemet weatherHourlyAemet) {
     List<dynamic>? temperaturas = dia.temperatura?.map((e) => e).toList();
     List<dynamic>? cielo = dia.estadoCielo?.map((e) => e).toList();
     //print(horas);
+    DateTime fecha = DateTime.parse(dia.fecha!);
 
     for (int i = 0; i < temperaturas!.length; i++) {
       int hour = int.parse(temperaturas.elementAt(i).periodo!);
       var h = TimeOfDay(hour: hour, minute: 0);
-      DateTime fecha = DateTime.parse(dia.fecha!);
 
       // Si es el primer día y la hora es menor o igual a la hora actual,
       // o si es un día posterior, se agregan las horas a la lista
       if ((dia == weatherHourlyAemet.prediccion?.dia?.first &&
-              (hour > now.hour || now.hour == 0)) ||
-          (dia != weatherHourlyAemet.prediccion?.dia?.first) &&
-              (hour > now.hour)) {
+              (hour > now.hour && now.day == fecha.day)) ||
+          (dia != weatherHourlyAemet.prediccion?.dia?.first)) {
         // Si es a partir de las 23:00, se agrega un día a la fecha
-        if (hour >= 23) {
-          fecha = fecha.add(const Duration(days: 1));
-        } else if ((now.month == fecha.month && now.day != fecha.day)) {
-          break;
+        if (hour == 20) {
+          fecha = fecha.add(Duration(days: 1));
         }
-
+        if (hour < now.hour && now.day == fecha.day) {
+          continue;
+        }
         // Creamos un nuevo objeto Temperatura con la fecha actualizada
         Temperatura temperatura = Temperatura(
           periodo: temperaturas.elementAt(i).periodo,

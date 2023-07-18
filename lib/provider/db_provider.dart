@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
@@ -52,11 +53,21 @@ class DbProvider {
   Future<List<Map<String, dynamic>>> buscarCiudad(
       Database db, String nombre) async {
     List<Map<String, dynamic>> resultado = await db.rawQuery(
-      'SELECT id FROM municipiosTable WHERE nombre = ?',
-      [nombre],
+      "SELECT id FROM municipiosTable WHERE nombre LIKE '%$nombre%'",
     );
 
     return resultado;
+  }
+
+  FutureOr<Iterable<String>> getSuggestions(String prefix, Database db) async {
+    List<Map<String, dynamic>> results = await db.rawQuery(
+      "SELECT nombre FROM municipiosTable WHERE nombre LIKE '$prefix%'",
+    );
+
+    FutureOr<Iterable<String>> suggestions =
+        results.map((result) => result['nombre']);
+
+    return suggestions;
   }
 
 // Función para buscar la estación más cercana a una ubicación dada

@@ -6,6 +6,7 @@ import 'package:radarweather/provider/weather_provider.dart';
 import 'package:radarweather/screen/forecast/forecast.dart';
 import 'package:radarweather/screen/mapscreen/radar.dart';
 import 'package:radarweather/screen/search/search.dart';
+import 'package:radarweather/screen/search/search_bar_custom.dart';
 
 import '../mapscreen/TileProvider/radarv2.dart';
 

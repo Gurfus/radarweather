@@ -8,8 +8,9 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:radarweather/provider/weather_provider.dart';
 import 'package:radarweather/screen/forecast/forecast.dart';
-import 'package:anim_search_bar/anim_search_bar.dart';
+
 import 'package:radarweather/screen/search/forecast_search.dart';
+import 'package:radarweather/screen/search/search_bar_custom.dart';
 
 import '../../provider/search_provider.dart';
 
@@ -31,7 +32,6 @@ class _SearchState extends State<Search> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController textController = TextEditingController();
     searchProvider = context.watch<SearchProvider>();
     return Container(
       decoration: const BoxDecoration(
@@ -47,13 +47,13 @@ class _SearchState extends State<Search> {
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
-            searchBarOff == false
-                ? Row(
+            searchProvider?.getSearchBar() == false
+                ? Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.only(
-                            top: 30.0, right: 10, left: 10),
+                        // padding: const EdgeInsets.only(
+                        //     top: 30.0, right: 10, left: 10),
                         child: const Icon(
                           LineIcons.alternateMapMarked,
                           color: Colors.white,
@@ -61,64 +61,19 @@ class _SearchState extends State<Search> {
                         ),
                       ),
                       Container(
-                        height: 90,
-                        padding: const EdgeInsets.only(
-                            top: 30.0, right: 10, left: 10),
-                        child: AnimSearchBar(
-                          width: 250,
-                          rtl: true,
-                          color: Colors.transparent,
-                          autoFocus: true,
-                          boxShadow: false,
-                          textFieldColor: Colors.white24,
-                          textFieldIconColor: Colors.white,
-                          searchIconColor: Colors.white,
-                          textController: textController,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 17,
-                          ),
-                          onSuffixTap: () {
-                            setState(() {
-                              textController.clear();
-                            });
-                          },
-                          animationDurationInMilli: 3,
-                          onSubmitted: (value) async {
-                            searchValue = value;
-
-                            // Obtener las coordenadas utilizando la función getCoordinates
-                            location = await searchProvider
-                                ?.getCoordinates(searchValue);
-
-                            if (location != null) {
-                              // Si se obtienen las coordenadas correctamente, llamar a los métodos necesarios del WeatherProvider
-                              // searchProvider?.cancelSubcriptionn(true);
-                              searchProvider?.getDataApi(
-                                  location!.latitude, location!.longitude);
-
-                              searchProvider?.cityName =
-                                  await searchProvider?.getLocatonHeader(
-                                      location?.latitude, location?.longitude);
-                              searchBarOff = false;
-                              searchOn = true;
-                            }
-                            setState(() {});
-                          },
-                        ),
+                        height: 160,
+                        child: const SearchBarCustom(),
                       ),
                     ],
                   )
-                : Container(),
-            searchOn == false
+                : Container(
+                    color: Colors.red,
+                  ),
+            searchProvider?.getSearchOn() == false
                 ? Container(
-                    margin: const EdgeInsets.symmetric(vertical: 100),
+                    margin: const EdgeInsets.symmetric(vertical: 50),
                     child: Column(
                       children: [
-                        const Text(
-                          'Busca una nueva ciudad',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
                         Lottie.asset('assets/aemetIcons/aemet/12.json',
                             width: 128, height: 128),
                       ],

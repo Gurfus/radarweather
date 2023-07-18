@@ -14,9 +14,12 @@ class GetHourlyWeatherAemet {
 
   getLocation(lat, lon) async {
     List<Placemark> placemark = await placemarkFromCoordinates(lat, lon);
-    Placemark place = placemark[0];
-    // print(place);
-    city = place.locality!;
+    for (var ubi in placemark) {
+      if (ubi.locality != '') {
+        city = ubi.locality;
+      }
+    }
+
     return city;
   }
 
