@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../model/aemetWeather/hourly/weather_hourly_aemet.dart';
-import '../../model/weatherV2/weather_api/weather_hourly.dart';
 
 import 'hourly_list.dart';
 

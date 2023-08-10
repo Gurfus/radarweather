@@ -53,7 +53,6 @@ class _ForecastState extends State<Forecast> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    //weatherProvider?.getLocation()?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -105,7 +104,10 @@ class _ForecastState extends State<Forecast> with WidgetsBindingObserver {
                   const SizedBox(
                     height: 30,
                   ),
-                  HeaderInfo(cityName: cityName),
+                  HeaderInfo(
+                    cityName: cityName,
+                    currentAemet: currentAemet,
+                  ),
                   CurrentWeatherInfo(
                       currentAemet: currentAemet,
                       weatherDailyAemet: weatherDailyAemet,

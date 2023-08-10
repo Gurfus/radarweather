@@ -1,17 +1,18 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:radarweather/model/aemetWeather/Current/current_aemet/current_aemet.dart';
 
 import '../provider/weather_provider.dart';
 
 class HeaderInfo extends StatefulWidget {
   final String? cityName;
-  const HeaderInfo({super.key, this.cityName});
+  final CurrentAemet? currentAemet;
+  const HeaderInfo({super.key, this.cityName, this.currentAemet});
 
   @override
   State<HeaderInfo> createState() => _HeaderInfoState();
@@ -25,14 +26,10 @@ class _HeaderInfoState extends State<HeaderInfo> {
   @override
   Widget build(BuildContext context) {
     final weatherProvider = context.watch<WeatherProvider>();
-
-    // city = weatherProvider.getCityName();
-
-    // if (city != weatherProvider.cityName) {
-    //   setState(() {
-    //     city;
-    //   });
-    // }
+    dynamic lastUpdate = widget.currentAemet?.fint;
+    DateTime dateTimeAemet = DateTime.parse(lastUpdate!);
+    lastUpdate = dateTimeAemet.add(const Duration(hours: 2));
+    lastUpdate = DateFormat('k').format(lastUpdate);
 
     if (widget.cityName == null) {
       city = weatherProvider.getCityName();
@@ -49,9 +46,14 @@ class _HeaderInfoState extends State<HeaderInfo> {
                 Container(
                     margin: const EdgeInsets.only(left: 20, right: 20),
                     alignment: Alignment.topLeft,
-                    child: Text(
-                      city!,
-                      style: const TextStyle(fontSize: 22, color: Colors.white),
+                    child: Row(
+                      children: [
+                        Text(
+                          city!,
+                          style: const TextStyle(
+                              fontSize: 22, color: Colors.white),
+                        ),
+                      ],
                     )),
               ],
             ),
@@ -59,17 +61,12 @@ class _HeaderInfoState extends State<HeaderInfo> {
               margin: const EdgeInsets.only(left: 10, right: 10),
               alignment: Alignment.topRight,
               child: Spin(
-                //duration: Duration(milliseconds: 2000),
-
                 animate: animate,
-                //infinite: animate,
                 spins: 1,
                 child: FloatingActionButton.small(
                   onPressed: () async {
                     setState(() {
                       animate = true;
-
-                      // weatherProvider.setIsloadinng(true);
                     });
 
                     await weatherProvider.getDataApi(
@@ -78,7 +75,6 @@ class _HeaderInfoState extends State<HeaderInfo> {
                     Future.delayed(const Duration(milliseconds: 500), () {
                       setState(() {
                         animate = false;
-                        //weatherProvider.setIsloadinng(false);
                       });
                     });
                     Fluttertoast.showToast(
@@ -101,9 +97,20 @@ class _HeaderInfoState extends State<HeaderInfo> {
         Container(
             margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
             alignment: Alignment.topLeft,
-            child: Text(
-              date,
-              style: TextStyle(fontSize: 12, color: Colors.grey[100]),
+            child: Row(
+              children: [
+                Text(
+                  date,
+                  style: TextStyle(fontSize: 12, color: Colors.grey[100]),
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                Text(
+                  'Última act: $lastUpdate - ${widget.currentAemet!.idema}',
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              ],
             )),
       ],
     );

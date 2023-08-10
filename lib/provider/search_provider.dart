@@ -43,7 +43,6 @@ class SearchProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     });
-    //getIdema(lat, long);
   }
 
   getLocatonHeader(lat, lon) async {
@@ -68,20 +67,18 @@ class SearchProvider extends ChangeNotifier {
       containsBar = true;
     }
     try {
-      if (containsBar = true) {
+      if (containsBar == true) {
         for (var city in citySplit!) {
           locations = await locationFromAddress(city);
           if (locations.isNotEmpty) {
             return locations.first;
           }
         }
-      } else {
+      } else if (containsBar == false) {
         locations = await locationFromAddress(cityName);
 
         if (locations.isNotEmpty) {
           Location location = locations.first;
-          double latitude = location.latitude;
-          double longitude = location.longitude;
           return location;
         } else {
           return null;
@@ -90,6 +87,7 @@ class SearchProvider extends ChangeNotifier {
     } catch (e) {
       return null;
     }
+    return null;
   }
 
   getCityName() {

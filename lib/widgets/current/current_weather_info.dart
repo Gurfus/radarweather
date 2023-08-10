@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-import 'package:radarweather/entities/current_weather.dart';
 import 'package:radarweather/model/aemetWeather/Daily/weather_daily_aemet.dart';
 import 'package:radarweather/model/aemetWeather/hourly/estado_cielo.dart';
 import 'package:radarweather/model/aemetWeather/hourly/weather_hourly_aemet.dart';
@@ -23,14 +22,11 @@ class CurrentWeatherInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
     now.hour;
-    //List<Hourly> allHours = [];
+
     List<EstadoCielo> allHoras = [];
-    //int currentIndex = 0;
-    //int showBorder = 0;
 
     for (var dia in weatherHourlyAemet?.prediccion?.dia ?? []) {
       List<dynamic>? horas = dia.estadoCielo?.map((e) => e).toList();
-      //print(horas);
 
       for (int i = 0; i < horas!.length; i++) {
         int hour = int.parse(horas.elementAt(i).periodo!);
@@ -50,13 +46,9 @@ class CurrentWeatherInfo extends StatelessWidget {
           EstadoCielo estadoCielo = EstadoCielo(
               periodo: horas.elementAt(i).periodo,
               value: horas.elementAt(i).value,
-              descripcion: horas.elementAt(i).descripcion
-
-              // fecha: fecha.toString(),
-              );
+              descripcion: horas.elementAt(i).descripcion);
 
           allHoras.add(estadoCielo);
-          // print(horas.elementAt(i).descripcion);
         }
       }
     }

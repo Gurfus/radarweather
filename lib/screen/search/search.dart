@@ -6,8 +6,6 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:radarweather/provider/weather_provider.dart';
-import 'package:radarweather/screen/forecast/forecast.dart';
 
 import 'package:radarweather/screen/search/forecast_search.dart';
 import 'package:radarweather/screen/search/search_bar_custom.dart';
@@ -18,7 +16,7 @@ class Search extends StatefulWidget {
   const Search({Key? key}) : super(key: key);
 
   @override
-  _SearchState createState() => _SearchState();
+  State<Search> createState() => _SearchState();
 }
 
 class _SearchState extends State<Search> {
@@ -52,8 +50,6 @@ class _SearchState extends State<Search> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        // padding: const EdgeInsets.only(
-                        //     top: 30.0, right: 10, left: 10),
                         child: const Icon(
                           LineIcons.alternateMapMarked,
                           color: Colors.white,

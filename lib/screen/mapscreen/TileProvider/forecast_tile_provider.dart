@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -20,7 +18,7 @@ class ForecastTileProvider implements TileProvider {
     } else {
       try {
         final url =
-            "https://tilecache.rainviewer.com/v2/radar/$timeStamps/256/$zoom/$x/$y/2/1_1.png";
+            "https://tilecache.rainviewer.com/v2/radar/$timeStamps/256/$zoom/$x/$y/2/1_0.png";
         final uri = Uri.parse(url);
         final ByteData imageData = await NetworkAssetBundle(uri).load("");
         tileBytes = imageData.buffer.asUint8List();
@@ -32,7 +30,7 @@ class ForecastTileProvider implements TileProvider {
       }
     }
 
-    return Tile(512, 512, tileBytes);
+    return Tile(256, 256, tileBytes);
   }
 }
 

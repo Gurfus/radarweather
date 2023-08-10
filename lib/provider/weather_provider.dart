@@ -5,10 +5,10 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:radarweather/data/aemet/get_hourly_weather_aemet.dart';
-import 'package:radarweather/data/apiWeather/get_current_weather.dart';
+
 import 'package:radarweather/data/aemet/get_current_weather_aemet.dart';
 import 'package:radarweather/data/aemet/get_daily_weather_aemet.dart';
-import 'package:radarweather/entities/current_weather.dart';
+
 import 'package:radarweather/model/aemetWeather/weather_aemet.dart';
 import 'package:radarweather/model/weather/weather_current/weather_current.dart';
 import 'package:radarweather/provider/db_provider.dart';
@@ -92,7 +92,7 @@ class WeatherProvider extends ChangeNotifier {
         return Future.error('Permitions are denied');
       }
     }
-    searchTimer = Timer(Duration(seconds: 240), () {
+    searchTimer = Timer(const Duration(seconds: 240), () {
       // Cancelar el stream del GPS si el tiempo máximo de búsqueda ha transcurrido
       positionStreamSubscription?.cancel();
       print(
@@ -111,7 +111,6 @@ class WeatherProvider extends ChangeNotifier {
         long = value.longitude;
         cityName = newCity;
         getDataApi(lat, long);
-        print('data nueva');
 
         notifyListeners();
       }
@@ -142,7 +141,6 @@ class WeatherProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     });
-    //getIdema(lat, long);
   }
 
   getLocatonHeader(lat, lon) async {

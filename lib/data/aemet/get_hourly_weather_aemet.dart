@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
-import 'package:radarweather/model/aemetWeather/Daily/weather_daily_aemet.dart';
+
 import 'package:radarweather/model/aemetWeather/hourly/weather_hourly_aemet.dart';
 import 'package:radarweather/model/aemetWeather/weather_aemet.dart';
 
@@ -52,5 +52,6 @@ class GetHourlyWeatherAemet {
       print(weatherAemet?.weatherHourlyAemet?.prediccion?.dia?.first);
       return weatherAemet!.weatherHourlyAemet;
     }
+    return null;
   }
 }

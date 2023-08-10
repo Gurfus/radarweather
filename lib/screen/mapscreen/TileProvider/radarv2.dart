@@ -6,8 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:radarweather/provider/weather_provider.dart';
-
-import 'forecast_tile_provider.dart';
+import 'package:radarweather/screen/mapscreen/TileProvider/forecast_tile_provider.dart';
 
 class Radarv2 extends StatefulWidget {
   const Radarv2({Key? key}) : super(key: key);
@@ -27,7 +26,7 @@ class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
   Timer? playbackTimer;
   int currentIndex = 0;
   Duration playbackInterval = const Duration(seconds: 1);
-  int timeStampsDate = 0;
+  int timeStampsDate = DateTime.now().hour;
   List<TileOverlay> tileOverlays = [];
   TileOverlay? currentTileOverlay;
   TileOverlay? nextTileOverlay;
@@ -44,7 +43,7 @@ class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
         weatherProvider!.getLat().toDouble(),
         weatherProvider!.getLong().toDouble(),
       ),
-      zoom: 8,
+      //zoom: 8,
     );
     animationController = AnimationController(
       vsync: this,
@@ -59,10 +58,12 @@ class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
         .then((response) {
       if (response.statusCode == 200) {
         final timestamps = jsonDecode(response.body);
-        print(timestamps);
+
+        timeStampsDate = timestamps[0];
         setState(() {
           radarImageUrls = timestamps;
         });
+
         initTiles();
       } else {
         throw Exception('Failed to load timestamps');
@@ -82,8 +83,6 @@ class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
     } else {
       final int nextOverlayId =
           radarImageUrls[(currentIndex + 1) % radarImageUrls.length];
-      print(currentOverlayId);
-      print(nextOverlayId);
 
       currentTileOverlay = TileOverlay(
           tileOverlayId: TileOverlayId(currentOverlayId.toString()),
@@ -105,10 +104,11 @@ class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
     });
   }
 
-  void startPlayback() {
+  Future<void> startPlayback() async {
     currentIndex = 0;
 
     playbackTimer?.cancel();
+    // Precargar algunos tiles antes de iniciar la animación
 
     playbackTimer = Timer.periodic(playbackInterval, (timer) {
       if (currentIndex < radarImageUrls.length - 1) {
@@ -131,13 +131,12 @@ class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
 
   Future<void> loadAndShowImage() async {
     if (currentIndex >= 0 && currentIndex < radarImageUrls.length) {
-      String imageUrl = radarImageUrls[currentIndex].toString();
       timeStampsDate = radarImageUrls[currentIndex];
       setState(() {
         tileOverlays.add(nextTileOverlay!);
       });
 
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 50));
 
       setState(() {
         tileOverlays.remove(currentTileOverlay!);
@@ -156,47 +155,63 @@ class Radarv2State extends State<Radarv2> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          GoogleMap(
-            myLocationEnabled: true,
-            myLocationButtonEnabled: true,
-            mapType: MapType.terrain,
-            trafficEnabled: false,
-            initialCameraPosition: _kGooglePlex!,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-              load();
-            },
-            tileOverlays: Set<TileOverlay>.from(tileOverlays),
-          ),
-          AnimatedBuilder(
-            animation: animation!,
-            builder: (context, child) {
-              return Opacity(
-                opacity: animation!.value,
-                child: child!,
-              );
-            },
-            child: Container(
-                // Contenido de la animación
-                ),
-          ),
-          Container(
-              alignment: Alignment.bottomCenter,
-              child: Text('${getTime(timeStampsDate)}'))
-        ],
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color.fromARGB(255, 1, 26, 64),
+            Color.fromARGB(255, 24, 143, 248)
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.topRight,
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (playbackTimer == null) {
-            startPlayback();
-          } else {
-            stopPlayback();
-          }
-        },
-        child: Icon(playbackTimer == null ? Icons.play_arrow : Icons.stop),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            GoogleMap(
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              mapType: MapType.terrain,
+              trafficEnabled: false,
+              zoomControlsEnabled: false,
+              initialCameraPosition: _kGooglePlex!,
+              minMaxZoomPreference: const MinMaxZoomPreference(8, 8),
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+                load();
+              },
+              tileOverlays: Set<TileOverlay>.from(tileOverlays),
+            ),
+            AnimatedBuilder(
+              animation: animation!,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: 0.5,
+                  child: child!,
+                );
+              },
+              child: Container(
+                  // Contenido de la animación
+                  ),
+            ),
+            Container(
+                alignment: Alignment.bottomCenter,
+                child: Text(getTime(timeStampsDate)))
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.lightBlue,
+          onPressed: () {
+            if (playbackTimer == null) {
+              startPlayback();
+            } else {
+              stopPlayback();
+            }
+          },
+          child: Icon(playbackTimer == null ? Icons.play_arrow : Icons.stop),
+        ),
       ),
     );
   }

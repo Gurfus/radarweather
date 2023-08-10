@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:provider/provider.dart';
+
 import 'package:radarweather/provider/weather_provider.dart';
 import 'package:radarweather/screen/forecast/forecast.dart';
-import 'package:radarweather/screen/mapscreen/radar.dart';
+
 import 'package:radarweather/screen/search/search.dart';
-import 'package:radarweather/screen/search/search_bar_custom.dart';
 
 import '../mapscreen/TileProvider/radarv2.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -19,22 +18,26 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedItems = 0;
-  final List<Widget> screens = [
-    const Forecast(),
-    const Radarv2(),
-    const Search(),
-  ];
+  final PageController _pageController =
+      PageController(); // Agregar PageController
 
   WeatherProvider? weatherProvider;
 
   @override
   void dispose() {
+    _pageController.dispose(); // Dispose del PageController
     weatherProvider?.positionStreamSubscription?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> screens = [
+      const Forecast(),
+      const Radarv2(),
+      const Search(),
+    ];
+
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -47,7 +50,16 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       child: Scaffold(
-        body: screens[_selectedItems],
+        body: PageView(
+          controller: _pageController, // Asignar el PageController
+          children: screens, // Lista de widgets de las diferentes pestañas
+          onPageChanged: (index) {
+            setState(() {
+              _selectedItems =
+                  index; // Actualizar el índice seleccionado al cambiar de página
+            });
+          },
+        ),
         backgroundColor: Colors.transparent,
         bottomNavigationBar: Container(
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -70,9 +82,13 @@ class _HomePageState extends State<HomePage> {
             iconSize: 24,
             tabBackgroundColor: Colors.blue.withOpacity(0.1),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-            onTabChange: (index) => setState(() {
-              _selectedItems = index;
-            }),
+            onTabChange: (index) {
+              setState(() {
+                _selectedItems = index;
+                _pageController.jumpToPage(
+                    index); // Cambiar directamente a la página seleccionada
+              });
+            },
             tabs: const [
               GButton(
                 icon: LineIcons.home,

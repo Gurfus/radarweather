@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
-// ignore: must_be_immutable
 class ForecastDayList extends StatelessWidget {
-  double? tempMax;
-  double? tempMin;
-  String? timeEpoch;
-  bool? esAemet;
-  double? totalprecipMm;
-  String? code;
-  double? maxWind;
+  final double? tempMax;
+  final double? tempMin;
+  final String? timeEpoch;
+  final bool? esAemet;
+  final double? totalprecipMm;
+  final String? code;
+  final double? maxWind;
 
-  ForecastDayList(
+  const ForecastDayList(
       {super.key,
       this.code,
       this.maxWind,
@@ -43,7 +42,6 @@ class ForecastDayList extends StatelessWidget {
           height: 20,
           width: 33,
           margin: const EdgeInsets.symmetric(vertical: 10),
-          //padding: EdgeInsets.symmetric(horizontal: 10),
           child: Text(
             getTime(timeEpoch),
             style: const TextStyle(color: Colors.white, fontSize: 13),

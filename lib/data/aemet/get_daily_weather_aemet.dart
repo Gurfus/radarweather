@@ -52,5 +52,6 @@ class GetDailyWeatherAemet {
       weatherAemet = WeatherAemet(weatherDailyAemet: dailyAemetDatas.first);
       return weatherAemet!.weatherDailyAemet;
     }
+    return null;
   }
 }

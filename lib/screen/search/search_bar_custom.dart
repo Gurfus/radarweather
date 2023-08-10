@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:line_icons/line_icon.dart';
+
 import 'package:line_icons/line_icons.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -14,11 +14,8 @@ class SearchBarCustom extends StatefulWidget {
   const SearchBarCustom({Key? key}) : super(key: key);
 
   @override
-  _SearchBarCustomState createState() => _SearchBarCustomState();
+  State<SearchBarCustom> createState() => _SearchBarCustomState();
 }
-
-@override
-State<SearchBarCustom> createState() => _SearchBarCustomState();
 
 class _SearchBarCustomState extends State<SearchBarCustom> {
   final TextEditingController _searchController = TextEditingController();

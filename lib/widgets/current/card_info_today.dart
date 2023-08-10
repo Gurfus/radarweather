@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:radarweather/entities/current_weather.dart';
+import 'package:lottie/lottie.dart';
+
 import 'package:radarweather/model/aemetWeather/Current/current_aemet/current_aemet.dart';
 import 'package:radarweather/model/aemetWeather/Daily/weather_daily_aemet.dart';
 import 'package:radarweather/model/aemetWeather/hourly/weather_hourly_aemet.dart';
@@ -19,13 +19,6 @@ class CardInfoToday extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // print(weatherDailyAemet?.prediccion?.dia?.first.viento?.first.velocidad);
-
-    dynamic lastUpdate = currentAemet?.fint;
-    DateTime dateTimeAemet = DateTime.parse(lastUpdate!);
-    lastUpdate = DateFormat('k').format(dateTimeAemet);
-    var intUpdate = int.parse(lastUpdate);
-    intUpdate += 2;
     return Card(
       clipBehavior: Clip.hardEdge,
       elevation: 6,
@@ -36,7 +29,9 @@ class CardInfoToday extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              SizedBox(width: 5),
+              const SizedBox(
+                width: 5,
+              ),
               Text(
                 '${currentAemet?.hr}%',
                 style: const TextStyle(color: Colors.white),
@@ -44,9 +39,31 @@ class CardInfoToday extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              Text(
-                'Última act: ${intUpdate} - ${currentAemet!.idema}',
-                style: const TextStyle(color: Colors.white),
+              Row(
+                children: [
+                  Lottie.asset('assets/aemetIcons/aemet/sunrise.json',
+                      width: 28, height: 28),
+                  Text(
+                    '${weatherHourlyAemet?.prediccion?.dia?.first.orto} ',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                width: 1,
+              ),
+              Row(
+                children: [
+                  Lottie.asset(
+                    'assets/aemetIcons/aemet/sunset.json',
+                    width: 28,
+                    height: 28,
+                  ),
+                  Text(
+                    '${weatherHourlyAemet?.prediccion?.dia?.first.ocaso}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
               ),
               const SizedBox(
                 width: 10,
@@ -55,7 +72,7 @@ class CardInfoToday extends StatelessWidget {
                 '${currentAemet?.prec} mm',
                 style: const TextStyle(color: Colors.white),
               ),
-              SizedBox(width: 5)
+              const SizedBox(width: 5)
             ],
           )),
     );

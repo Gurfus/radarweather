@@ -94,6 +94,7 @@ class _ForecastSearchState extends State<ForecastSearch> {
                   ),
                   HeaderInfo(
                     cityName: cityName,
+                    currentAemet: currentAemet,
                   ),
                   CurrentWeatherInfo(
                       currentAemet: currentAemet,

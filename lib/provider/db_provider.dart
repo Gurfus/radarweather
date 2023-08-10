@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
 
 import '../helpers/estacionesIdema/calculate_near_station.dart';
 
@@ -41,12 +40,6 @@ class DbProvider {
     return await openDatabase(
       path,
       version: 1,
-      // onOpen: (db) {
-      //   // Llamada para buscar una ciudad después de abrir la base de datos
-      //   buscarCiudad(db, ciudad).then((resultado) {
-      //     // Procesar el resultado aquí
-      //   });
-      // },
     );
   }
 
