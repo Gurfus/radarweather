@@ -1,16 +1,23 @@
-# radarweather
+Aplicación del tiempo realizada con Flutter.
 
-A new Flutter project.
+Tiempo por horas y diario, basado en la Api de AEMET.
 
-## Getting Started
+Geolocalización y google maps.
 
-This project is a starting point for a Flutter application.
+Radar del tiempo con la ultima imagen disponible y animación.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Sqlite para la base de datos de los municipios.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+
+<img width="333" alt="Captura de Pantalla 2023-10-25 a las 14 25 59" src="https://github.com/Gurfus/radarweather/assets/91260525/c53b42b9-842e-46bf-ae03-bb6972dc77d3">
+
+
+<img width="333" alt="Captura de Pantalla 2023-10-25 a las 14 26 30" src="https://github.com/Gurfus/radarweather/assets/91260525/8d5d483a-7630-472c-943b-c134f34820f5">
+
+
+<img width="340" alt="Captura de Pantalla 2023-10-25 a las 14 28 19" src="https://github.com/Gurfus/radarweather/assets/91260525/363e7be4-f4d8-4e8b-ab33-61dc87900dd4">
+
+<img width="325" alt="Captura de Pantalla 2023-10-25 a las 14 34 32" src="https://github.com/Gurfus/radarweather/assets/91260525/4fc44791-554b-4167-86b8-d32feefe00dd">
+
