@@ -21,7 +21,7 @@ class GetCurrentWeatherAemet {
     estacion = estacion.values.first;
 
     String apiAemetCurrent =
-        'https://opendata.aemet.es/opendata/api/observacion/convencional/datos/estacion/$estacion?api_key=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZXJyYW5lY2hhdmVzQGdtYWlsLmNvbSIsImp0aSI6ImU3MzdhNGNlLWQ5NzUtNGUzZi04MzAyLWZhZTcxNjBiODgzNSIsImlzcyI6IkFFTUVUIiwiaWF0IjoxNjg3Mzc3MjIzLCJ1c2VySWQiOiJlNzM3YTRjZS1kOTc1LTRlM2YtODMwMi1mYWU3MTYwYjg4MzUiLCJyb2xlIjoiIn0.98Cj_MSHJPQHYuQDzlPzVjtvzYYjePzX1q5dsrlVX1Y';
+        'https://opendata.aemet.es/opendata/api/observacion/convencional/datos/estacion/$estacion?api_key=';
     final response = await http.get(Uri.parse(apiAemetCurrent));
     var jsonAemet = jsonDecode(response.body);
     var data = jsonAemet['datos'];
